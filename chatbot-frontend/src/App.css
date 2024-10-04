@@ -4,17 +4,16 @@
   display: flex;
   flex-direction: column;
   background-color: #ffffffa2;
-  overflow: hidden;
 }
 
 .container {
   margin: 50px;
-  height: 100vh;
+  height: calc(100vh - 100px);
 }
 
 .chat-container {
   padding: 10px;
-  height: calc(100% - 100px);
+  height: 100%;
   flex-grow: 1;  
   max-width: 600px;
   width: 100%;
@@ -88,6 +87,7 @@ button:hover {
   position: relative;
   overflow-y: scroll;
   padding-bottom: 100px;
+
 }
 
 
