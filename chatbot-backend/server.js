@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const Session = require('./models/session');
+const Message = require('./models/message');
 
 const app = express();
 const PORT = 3000;
@@ -56,15 +57,20 @@ const questions = [
 ];
 
 app.post('/api/session/start', async (req, res) => {
-
+   const userSession = await Session.findOne({ sessionId: req.sessionID });
+   if(!userSession)  {
     const newSession = new Session({
       sessionId: req.sessionID,
-      currentQuestionIndex: 0, 
-      answers: [],
+      currentQuestionIndex: 0,
       startedAt: Date.now()
     });
     await newSession.save();
     res.json({ message: 'Session started', sessionId: req.sessionID });
+   } else {
+    const messages = await Message.find({sessionId: userSession.id})
+    messages.pop()
+    res.json({messages: messages})
+   }
   });
 
 
@@ -73,6 +79,15 @@ app.get('/api/session/question', async (req, res) => {
 
   if (userSession && userSession.currentQuestionIndex < questions.length) {
     const currentQuestion = questions[userSession.currentQuestionIndex];
+    const messages = await Message.find({sessionId: userSession.id})
+    if (!messages.length || !messages.find(elem=> elem.content === currentQuestion)) {
+      const message = new Message({
+        content:currentQuestion,
+        role: "assistant",
+        sessionId: userSession.id
+      })
+      await message.save()
+    }
     res.json({ question: currentQuestion });
   } else {
     res.json({ message: 'Session complete' });
@@ -85,12 +100,15 @@ app.post('/api/session/answer', async (req, res) => {
   const userSession = await Session.findOne({ sessionId: req.sessionID });
 
   if (userSession && userSession.currentQuestionIndex < questions.length) {
-    userSession.answers.push({
-      question: questions[userSession.currentQuestionIndex],
-      answer: answer
-    });
-
+    const message = new Message({
+      content:answer,
+      role: "user",
+      sessionId: userSession.id
+    })
+    await message.save()
     userSession.currentQuestionIndex++;
+
+
     if (userSession.currentQuestionIndex >= questions.length) {
       userSession.endedAt = Date.now();
     }

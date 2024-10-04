@@ -7,7 +7,7 @@
     "start": "concurrently \"cd chatbot-backend && node server.js\" \"cd chatbot-frontend && npm run dev\""
   },
   "keywords": [],
-  "author": "",
+  "author": "ramazan ertan",
   "license": "ISC",
   "description": "",
   "devDependencies": {

@@ -23,10 +23,12 @@ function App() {
   }, []);
 
   const startSession = async () => {
- 
     try {
-     await axios.post('http://localhost:3000/api/session/start');  
-      fetchQuestion();
+      const response =  await axios.post('http://localhost:3000/api/session/start');
+      if (response.data.messages) {
+        setMessages(response.data.messages);
+      }
+      await fetchQuestion();
     } catch (err) {
       console.error("Error starting session:", err);
     }
@@ -34,11 +36,8 @@ function App() {
 
   const fetchQuestion = async () => {
     try {
-
-      const response = await axios.get('http://localhost:3000/api/session/question');
-      
+      const response = await axios.get('http://localhost:3000/api/session/question');    
       if (response.data.question) {
-  
         setMessages(prevMessages => [...prevMessages, { role: 'assistant', content: response.data.question }]);
       } else {
         setIsCompleted(true);
@@ -69,9 +68,7 @@ function App() {
 
   return (
     <>
-    
-    
-    <div className="App">
+      <div className="App">
       <div className='container'>
       <div className="chat-container">
         <div className="message-list">
@@ -95,11 +92,8 @@ function App() {
         {isCompleted && <h2>Questions has end!</h2>}
       </div>
       </div>
-      
     </div>
-    </>
-   
-    
+   </>   
   );
 }
 
