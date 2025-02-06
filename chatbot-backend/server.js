@@ -39,7 +39,7 @@ app.use((req, res, next)=> {
   
 
 
-mongoose.connect('mongodb://chatbotadmin:123456@185.255.94.141:27017/chatbot_db?authSource=chatbot_db&readPreference=primary&ssl=false').then(() => {
+mongoose.connect('mongodb://db.../chatbot_db?authSource=chatbot_db&readPreference=primary&ssl=false').then(() => {
   console.log('MongoDB connected');
 }).catch(err => console.log(err));
 
